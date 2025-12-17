@@ -17,6 +17,9 @@ jobs:
         working-directory: terraform
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Check confirmation input
         run: |
           if [ "${{ inputs.confirm }}" != "DESTROY" ]; then
@@ -25,9 +28,6 @@ jobs:
             exit 1
           fi
           echo "Confirmation validated: DESTROY"
-
-      - name: Checkout code
-        uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
