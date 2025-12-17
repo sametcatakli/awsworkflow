@@ -1,7 +1,6 @@
-# Data source for Ubuntu 22.04 LTS AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["099720109477"] # Canonical
+  owners      = ["099720109477"]
 
   filter {
     name   = "name"
@@ -14,12 +13,10 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-# Security Group for EC2 instance
 resource "aws_security_group" "ec2_sg" {
   name        = "${var.project_name}-sg"
   description = "Security group for ${var.project_name} EC2 instance"
 
-  # HTTP ingress from anywhere
   ingress {
     from_port   = 80
     to_port     = 80
@@ -28,7 +25,6 @@ resource "aws_security_group" "ec2_sg" {
     description = "HTTP access"
   }
 
-  # SSH ingress from configured CIDR
   ingress {
     from_port   = 22
     to_port     = 22
@@ -37,7 +33,6 @@ resource "aws_security_group" "ec2_sg" {
     description = "SSH access"
   }
 
-  # Egress all traffic
   egress {
     from_port   = 0
     to_port     = 0
@@ -51,16 +46,12 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# EC2 Instance
 resource "aws_instance" "web" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = var.instance_type
-
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-
-  user_data = file("${path.module}/user_data.sh")
-
-  key_name = var.key_name
+  user_data              = file("${path.module}/user_data.sh")
+  key_name               = var.key_name
 
   tags = {
     Name = "${var.project_name}-ec2"

@@ -1,11 +1,11 @@
 variable "aws_region" {
-  description = "AWS region for resources"
+  description = "AWS region"
   type        = string
   default     = "us-east-1"
 }
 
 variable "project_name" {
-  description = "Project name used for resource naming"
+  description = "Project name"
   type        = string
   default     = "awsworkflow"
 }
@@ -17,13 +17,13 @@ variable "instance_type" {
 }
 
 variable "ssh_cidr" {
-  description = "CIDR block allowed for SSH access (port 22). WARNING: Default 0.0.0.0/0 allows access from anywhere - restrict this in production!"
+  description = "CIDR block for SSH access"
   type        = string
   default     = "0.0.0.0/0"
 }
 
 variable "key_name" {
-  description = "Name of the AWS key pair for SSH access (optional)"
+  description = "AWS key pair name for SSH access"
   type        = string
   default     = null
 }
