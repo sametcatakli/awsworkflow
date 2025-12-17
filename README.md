@@ -75,9 +75,12 @@ Pour vérifier que les secrets sont bien configurés :
 
 ## Utilisation
 
-### Workflow Automatique (Apply)
+### Workflow Apply
 
-Le workflow `terraform-apply.yml` s'exécute automatiquement :
+Le workflow `terraform-apply.yml` peut s'exécuter de deux façons :
+
+#### Déclenchement Automatique
+
 - **Trigger** : Push sur la branche `main`
 - **Condition** : Uniquement si des fichiers dans `terraform/**` ont changé
 - **Actions** :
@@ -89,6 +92,21 @@ Le workflow `terraform-apply.yml` s'exécute automatiquement :
   6. `terraform validate`
   7. `terraform plan -out=tfplan`
   8. `terraform apply -auto-approve tfplan`
+
+#### Déclenchement Manuel (workflow_dispatch)
+
+Vous pouvez également déclencher le workflow manuellement :
+
+1. Allez dans l'onglet **Actions** de votre repository GitHub
+2. Sélectionnez le workflow **Terraform Apply**
+3. Cliquez sur **Run workflow**
+4. Sélectionnez la branche (généralement `main`)
+5. Cliquez sur **Run workflow**
+
+Cela permet de relancer le déploiement sans faire de push, utile pour :
+- Re-déployer après un problème
+- Tester après avoir modifié les secrets GitHub
+- Forcer un déploiement même si aucun fichier n'a changé
 
 ### Workflow Manuel (Destroy)
 
