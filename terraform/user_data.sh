@@ -57,7 +57,6 @@ cat > /var/www/html/index.html <<EOF
         <div class="logo">
             <img src="https://www.heh.be/design/logo_HEH.png" alt="HEH Logo">
         </div>
-        <h1>HEH</h1>
         <p class="subtitle">Projet IAC AWS GitHub Actions</p>
     </div>
 </body>
