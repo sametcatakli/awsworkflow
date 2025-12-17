@@ -270,11 +270,38 @@ terraform init -migrate-state
 
 Vérifiez que vous avez bien créé le bucket S3 avec les commandes de bootstrap.
 
-### Le workflow GitHub Actions échoue
+### Le workflow GitHub Actions échoue avec "Credentials could not be loaded"
 
-1. Vérifiez que les secrets GitHub sont bien configurés
-2. Vérifiez les logs du workflow dans l'onglet Actions
-3. Vérifiez que les credentials AWS ont les permissions nécessaires (EC2, S3)
+Cette erreur signifie que les secrets GitHub ne sont pas correctement configurés. Voici comment résoudre :
+
+1. **Vérifiez que les secrets existent** :
+   - Allez dans **Settings > Secrets and variables > Actions**
+   - Vous devez voir exactement ces 2 secrets (respectez la casse) :
+     - `AWS_ACCESS_KEY_ID`
+     - `AWS_SECRET_ACCESS_KEY`
+
+2. **Vérifiez les noms des secrets** :
+   - Les noms doivent être **exactement** : `AWS_ACCESS_KEY_ID` et `AWS_SECRET_ACCESS_KEY`
+   - Pas de fautes de frappe, pas d'espaces avant/après
+   - Respectez la casse (majuscules/minuscules)
+
+3. **Vérifiez que les valeurs ne sont pas vides** :
+   - Cliquez sur chaque secret pour vérifier qu'il a une valeur
+   - Les valeurs ne doivent pas être vides ou contenir uniquement des espaces
+
+4. **Créez les secrets si nécessaire** :
+   - Cliquez sur **New repository secret**
+   - Nom : `AWS_ACCESS_KEY_ID` (copiez-collez exactement)
+   - Valeur : votre Access Key ID AWS
+   - Répétez pour `AWS_SECRET_ACCESS_KEY`
+
+5. **Vérifiez les permissions AWS** :
+   - Les credentials doivent avoir les permissions : `EC2`, `S3`
+   - Testez avec AWS CLI localement pour vérifier que les credentials fonctionnent
+
+6. **Après avoir modifié les secrets** :
+   - Relancez le workflow manuellement (workflow_dispatch)
+   - Les secrets sont mis en cache, un nouveau run devrait les prendre en compte
 
 ## Support
 
