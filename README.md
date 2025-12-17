@@ -59,13 +59,19 @@ Dans votre repository GitHub, allez dans **Settings > Secrets and variables > Ac
 
 1. **AWS_ACCESS_KEY_ID** : Votre clé d'accès AWS
 2. **AWS_SECRET_ACCESS_KEY** : Votre clé secrète AWS
-3. **AWS_SESSION_TOKEN** : (Optionnel) Votre session token si vous utilisez des credentials temporaires
 
 ⚠️ **Important** : 
 - Ne jamais commiter ces secrets dans le code !
 - Les secrets sont utilisés via `${{ secrets.NOM_SECRET }}` dans les workflows
-- Si vous utilisez des credentials temporaires (avec `aws_session_token`), ajoutez aussi `AWS_SESSION_TOKEN` dans GitHub
-- ⚠️ **Attention** : Les tokens temporaires expirent ! Pour une utilisation à long terme, créez un utilisateur IAM avec des credentials permanents.
+- ⚠️ **Pour les credentials temporaires** : Si vous utilisez des credentials temporaires (avec `aws_session_token`), vous devez créer un **utilisateur IAM** avec des credentials permanents pour GitHub Actions, car les tokens temporaires expirent rapidement.
+- Les credentials doivent avoir les permissions suivantes : `EC2`, `S3` (pour le backend state)
+
+### Vérification des secrets
+
+Pour vérifier que les secrets sont bien configurés :
+1. Allez dans **Settings > Secrets and variables > Actions**
+2. Vous devriez voir `AWS_ACCESS_KEY_ID` et `AWS_SECRET_ACCESS_KEY` listés
+3. Si vous voyez une erreur "Credentials could not be loaded", vérifiez que les noms des secrets sont exactement `AWS_ACCESS_KEY_ID` et `AWS_SECRET_ACCESS_KEY` (respectez la casse)
 
 ## Utilisation
 
