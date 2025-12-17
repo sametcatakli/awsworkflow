@@ -1,30 +1,24 @@
-# AWS Workflow - Terraform + GitHub Actions
+# AWS Workflow
 
-Déploiement automatisé d'une infrastructure AWS EC2 avec Terraform et GitHub Actions, utilisant un backend S3 pour le state Terraform.
+AWS EC2 infrastructure deployed with Terraform and GitHub Actions.
 
 ## Architecture
 
-- Terraform : Infrastructure as Code
-- Backend S3 : Stockage du state Terraform (`awsworkflow-tfstate-sametcatakli`)
-- GitHub Actions : CI/CD pour appliquer automatiquement les changements
-- EC2 : Instance Ubuntu 22.04 LTS avec nginx
+- Terraform for infrastructure
+- S3 backend for Terraform state
+- GitHub Actions for CI/CD
+- EC2 Ubuntu 22.04 LTS instance with nginx
 
-### Infrastructure déployée
+## Prerequisites
 
-- Instance EC2 Ubuntu 22.04 LTS (t3.micro)
-- Security Group avec ports 80 (HTTP) et 22 (SSH)
-- Nginx installé et configuré via user_data
-
-## Prérequis
-
-- Compte AWS avec accès programmatique
-- AWS CLI installé et configuré
+- AWS account with programmatic access
+- AWS CLI configured
 - Terraform >= 1.6.0
-- Accès au repository GitHub avec droits d'administration
+- Admin access to GitHub repository
 
-## Bootstrap du Backend
+## Installation
 
-Créer le bucket S3 pour le backend Terraform :
+### S3 Backend
 
 ```bash
 aws s3api create-bucket \
@@ -36,31 +30,33 @@ aws s3api put-bucket-versioning \
   --versioning-configuration Status=Enabled
 ```
 
-## Configuration des Secrets GitHub
+### GitHub Secrets
 
-Dans **Settings > Secrets and variables > Actions**, ajouter :
+Configure in **Settings > Secrets and variables > Actions**:
 
-- `AWS_ACCESS_KEY_ID` : Clé d'accès AWS
-- `AWS_SECRET_ACCESS_KEY` : Clé secrète AWS
-- `AWS_SESSION_TOKEN` : Session token (requis pour credentials temporaires)
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_SESSION_TOKEN` (if using temporary credentials)
 
-Les credentials doivent avoir les permissions EC2 et S3.
+Required permissions: EC2, S3
 
-## Utilisation
+## Usage
 
-### Workflow Apply
+### Automatic Deployment
 
-Déclenchement automatique sur push vers `main` si des fichiers dans `terraform/**` changent.
+Workflow runs automatically on push to `main` when files in `terraform/**` change.
 
-Déclenchement manuel via **Actions > Terraform Apply > Run workflow**.
+### Manual Deployment
 
-### Workflow Destroy
+**Actions > Terraform Apply > Run workflow**
 
-Déclenchement manuel uniquement via **Actions > Terraform Destroy > Run workflow**.
+### Destroy
 
-Confirmation requise : saisir `DESTROY` dans le champ de confirmation.
+**Actions > Terraform Destroy > Run workflow**
 
-## Commandes Locales
+Confirmation: enter `DESTROY`
+
+## Local Commands
 
 ```bash
 cd terraform
@@ -71,47 +67,33 @@ terraform output
 terraform destroy
 ```
 
-## Récupération des Outputs
+## Variables
 
-```bash
-terraform output instance_public_ip
-terraform output instance_public_dns
-```
+| Variable | Default |
+|----------|---------|
+| `aws_region` | `us-east-1` |
+| `project_name` | `awsworkflow` |
+| `instance_type` | `t3.micro` |
+| `ssh_cidr` | `0.0.0.0/0` |
+| `key_name` | `null` |
 
-Ou via la console AWS : **EC2 > Instances > awsworkflow-ec2**
+## Outputs
 
-## Variables Terraform
+- `instance_public_ip`
+- `instance_public_dns`
 
-| Variable | Description | Défaut |
-|----------|-------------|--------|
-| `aws_region` | Région AWS | `us-east-1` |
-| `project_name` | Nom du projet | `awsworkflow` |
-| `instance_type` | Type d'instance EC2 | `t3.micro` |
-| `ssh_cidr` | CIDR pour SSH | `0.0.0.0/0` |
-| `key_name` | Nom de la clé SSH AWS | `null` |
-
-## Structure du Projet
+## Structure
 
 ```
-awsworkflow/
-├── terraform/
-│   ├── versions.tf
-│   ├── providers.tf
-│   ├── backend.tf
-│   ├── variables.tf
-│   ├── main.tf
-│   ├── outputs.tf
-│   └── user_data.sh
-├── .github/workflows/
-│   ├── terraform-apply.yml
-│   └── terraform-destroy.yml
-└── README.md
+terraform/
+  versions.tf
+  providers.tf
+  backend.tf
+  variables.tf
+  main.tf
+  outputs.tf
+  user_data.sh
+.github/workflows/
+  terraform-apply.yml
+  terraform-destroy.yml
 ```
-
-## Dépannage
-
-**Backend configuration changed** : `terraform init -migrate-state`
-
-**Bucket does not exist** : Vérifier la création du bucket S3
-
-**Credentials could not be loaded** : Vérifier que les secrets GitHub sont configurés avec les noms exacts `AWS_ACCESS_KEY_ID` et `AWS_SECRET_ACCESS_KEY`
